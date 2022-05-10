@@ -83,6 +83,7 @@ public class Maze extends JFrame {
 
         }).start();
     }
+
     private boolean BFS (){
         boolean result = false;
         int x = 0;
@@ -128,57 +129,6 @@ public class Maze extends JFrame {
         }
         return result;
     }
-
-   /* private boolean DFS1(){
-        boolean result = false;
-        Stack<Point> myStack = new Stack<>();
-        myStack.add(new Point(0,0));
-        while (!myStack.isEmpty()){
-            Point currentButton = myStack.pop();
-            if (this.color[currentButton.x][currentButton.y].equals("black")) {
-                setSquareAsVisited(currentButton.x, currentButton.y, false);
-            }
-            if (this.color[currentButton.x][currentButton.y].equals("white")){
-                this.color[currentButton.x][currentButton.y] = "gray";
-                setSquareAsVisited(currentButton.x, currentButton.y, true);
-                if (currentButton.x == this.values.length-1 && currentButton.y == this.values.length-1){
-                    result = true;
-                    break;
-                }
-                LinkedList<Point> neighbors = this.setNeighbors(currentButton.x, currentButton.y);
-                for (Point neighbor: neighbors){
-                    if (this.color[neighbor.x][neighbor.y].equals("white")){
-                        myStack.add(neighbor);
-                    }
-                }
-
-            }
-        }
-        return result;
-    }
-
-    */
-
-    private boolean DFSRec(Point point){
-        if (this.color[point.x][point.y].equals("white")){
-            this.color[point.x][point.y] = "gray";
-            setSquareAsVisited(point.x, point.y, true);
-            if (point.x == this.values.length-1 && point.y == this.values.length-1){
-                return true;
-            }
-            LinkedList<Point> neighbors = this.setNeighbors(point.x, point.y);
-            for (Point neighbor: neighbors){
-                if (this.color[neighbor.x][neighbor.y].equals("white")) {
-                    DFSRec(neighbor);
-                }
-            }
-            this.color[point.x][point.y] = "black";
-            setSquareAsVisited(point.x, point.y, false);
-
-        }
-        return false;
-    }
-
 
     private LinkedList<Point> setNeighbors(int x, int y){
         LinkedList<Point> neighbors = new LinkedList<>();
