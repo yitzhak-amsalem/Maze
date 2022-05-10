@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class Main {
     public static void main(String[] args) {
-        String algorithmString = JOptionPane.showInputDialog("Choose algorithm (1 - brute force, 2 - DFS, 3 - BFS) ");
+        String algorithmString = JOptionPane.showInputDialog("Choose algorithm (1 - DFS, 2 - BFS) ");
         String sizeAsString = JOptionPane.showInputDialog("Choose maze size: ");
         int size = Integer.parseInt(sizeAsString);
         int algorithm = Integer.parseInt(algorithmString);

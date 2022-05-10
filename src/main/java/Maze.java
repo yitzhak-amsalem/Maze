@@ -6,6 +6,8 @@ import java.util.*;
 public class Maze extends JFrame {
 
     private int[][] values;
+
+    private String[][] color;
     private boolean[][] visited;
     private int startRow;
     private int startColumn;
@@ -29,6 +31,12 @@ public class Maze extends JFrame {
                 }
             }
             values[i] = row;
+        }
+        this.color = new String[size][size];
+        for (int i = 0; i < values.length; i++) {
+            for (int j = 0; j < values.length; j++) {
+                this.color[i][j] = "white";
+            }
         }
         values[0][0] = Definitions.EMPTY;
         values[size - 1][size - 1] = Definitions.EMPTY;
@@ -62,10 +70,8 @@ public class Maze extends JFrame {
     public void checkWayOut() {
         new Thread(() -> {
             boolean result = false;
+
             switch (this.algorithm) {
-                case Definitions.ALGORITHM_BRUTE_FORCE:
-                    result = this.DFSRec(new Point(0,0));
-                    break;
                 case Definitions.ALGORITHM_DFS:
                     result = this.DFS();
                     break;
@@ -99,6 +105,7 @@ public class Maze extends JFrame {
         }
         return result;
     }
+
     private boolean DFS(){
         boolean result = false;
         Stack<Point> myStack = new Stack<>();
@@ -121,20 +128,57 @@ public class Maze extends JFrame {
         }
         return result;
     }
+
+   /* private boolean DFS1(){
+        boolean result = false;
+        Stack<Point> myStack = new Stack<>();
+        myStack.add(new Point(0,0));
+        while (!myStack.isEmpty()){
+            Point currentButton = myStack.pop();
+            if (this.color[currentButton.x][currentButton.y].equals("black")) {
+                setSquareAsVisited(currentButton.x, currentButton.y, false);
+            }
+            if (this.color[currentButton.x][currentButton.y].equals("white")){
+                this.color[currentButton.x][currentButton.y] = "gray";
+                setSquareAsVisited(currentButton.x, currentButton.y, true);
+                if (currentButton.x == this.values.length-1 && currentButton.y == this.values.length-1){
+                    result = true;
+                    break;
+                }
+                LinkedList<Point> neighbors = this.setNeighbors(currentButton.x, currentButton.y);
+                for (Point neighbor: neighbors){
+                    if (this.color[neighbor.x][neighbor.y].equals("white")){
+                        myStack.add(neighbor);
+                    }
+                }
+
+            }
+        }
+        return result;
+    }
+
+    */
+
     private boolean DFSRec(Point point){
-        if (!this.visited[point.x][point.y]){
+        if (this.color[point.x][point.y].equals("white")){
+            this.color[point.x][point.y] = "gray";
             setSquareAsVisited(point.x, point.y, true);
             if (point.x == this.values.length-1 && point.y == this.values.length-1){
                 return true;
-
             }
             LinkedList<Point> neighbors = this.setNeighbors(point.x, point.y);
             for (Point neighbor: neighbors){
-                DFSRec(neighbor);
+                if (this.color[neighbor.x][neighbor.y].equals("white")) {
+                    DFSRec(neighbor);
+                }
             }
+            this.color[point.x][point.y] = "black";
+            setSquareAsVisited(point.x, point.y, false);
+
         }
         return false;
     }
+
 
     private LinkedList<Point> setNeighbors(int x, int y){
         LinkedList<Point> neighbors = new LinkedList<>();
@@ -149,7 +193,7 @@ public class Maze extends JFrame {
                 row = y;
             }
             if ((column < this.values.length && row < this.values.length) && (column >= 0 && row >= 0)) {
-                if (this.values[column][row] == Definitions.EMPTY) {
+                if (this.values[column][row] == Definitions.EMPTY && this.color[column][row].equals("white")) {
                     neighbors.add(new Point(column, row));
                 }
             }
