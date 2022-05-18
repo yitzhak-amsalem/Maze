@@ -137,34 +137,6 @@ public class Maze extends JFrame {
         return result;
     }
 
-    /*
-    void tracePath(cell cellDetails[][COL], Pair dest)
-{
-    printf("\nThe Path is ");
-    int row = dest.first;
-    int col = dest.second;
-
-    stack<S> Path;
-
-    while (!(cellDetails[row][col].parent_i == row
-        && cellDetails[row][col].parent_j == col)) {
-        Path.push(make_pair(row, col));
-        int temp_row = cellDetails[row][col].parent_i;
-        int temp_col = cellDetails[row][col].parent_j;
-        row = temp_row;
-        col = temp_col;
-    }
-
-    Path.push(make_pair(row, col));
-    while (!Path.empty()) {
-        pair<int, int> p = Path.top();
-        Path.pop();
-        printf("-> (%d,%d) ", p.first, p.second);
-    }
-
-    return;
-}
-    */
     private List<Square> printPath(Square goal){
         List<Square> pathToGoal = new ArrayList<>();
         for(Square square = goal; square!=null; square = this.path.get(square)){
