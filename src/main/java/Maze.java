@@ -7,7 +7,6 @@ import java.util.List;
 public class Maze extends JFrame {
 
     private int[][] values;
-
     private String[][] color;
     private boolean[][] visited;
     private int startRow;
