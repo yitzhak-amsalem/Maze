@@ -107,6 +107,7 @@ public class Maze extends JFrame {
 
         }).start();
     }
+
     private boolean AStar(){
         boolean result = false;
         Square start = squares.get(this.start.getX()).get(this.start.getY());
@@ -118,7 +119,6 @@ public class Maze extends JFrame {
         while (!priorityQueue.isEmpty()){
             Square currentSquare = priorityQueue.poll();
             setSquareAsVisited(currentSquare.getX(), currentSquare.getY(), true);
-/*            System.out.println("currentSquare: " + currentSquare +""+ currentSquare.getfCost());*/
             if (currentSquare.equals(goal)){
                 result = true;
                 break;
@@ -126,8 +126,6 @@ public class Maze extends JFrame {
             HashMap<Square, Boolean> neighbors;
             neighbors = this.setSquareNeighbors(currentSquare.getX(), currentSquare.getY(), currentSquare.getgCost());
             for (Square square: neighbors.keySet()){
-/*                System.out.println(square + "" + square.getfCost());
-                System.out.println((currentSquare.getfCost()) + "::" + square.getfCost());*/
                 if (!this.visited[square.getX()][square.getY()] ) {
                     path.put(square, currentSquare);  //TODO fix path
                     priorityQueue.add(square);
