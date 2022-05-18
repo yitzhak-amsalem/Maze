@@ -2,6 +2,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 public class Maze extends JFrame {
 
@@ -16,6 +17,9 @@ public class Maze extends JFrame {
     private int columns;
     private boolean backtracking;
     private int algorithm;
+    private ArrayList<ArrayList<Square>> squares;
+    private ArrayList<Square> squaresColumns;
+    private HashMap<Square, Square> path;
 
     public Maze(int algorithm, int size, int startRow, int startColumn) {
         this.algorithm = algorithm;
@@ -46,6 +50,19 @@ public class Maze extends JFrame {
         this.buttonList = new ArrayList<>();
         this.rows = values.length;
         this.columns = values.length;
+
+        this.path = new HashMap<>();
+        this.squares = new ArrayList<>();
+        for (int i = 0; i < rows; i++) {
+            this.squaresColumns = new ArrayList<>();
+            squares.add(squaresColumns);
+            for (int j = 0; j < columns; j++) {
+                Square s = new Square(i, j);
+                squares.get(i).add(s);
+                path.put(s, null);
+                squares.get(i).get(j).sethCost(squares.get(i).get(j).hCost(new Square(rows - 1, columns - 1)));
+            }
+        }
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //        this.setLocationRelativeTo(null);
@@ -78,10 +95,131 @@ public class Maze extends JFrame {
                 case Definitions.ALGORITHM_BFS:
                     result = this.BFS();
                     break;
+                case Definitions.ALGORITHM_A_STAR:
+                    result = this.AStar();
+                    System.out.println(this.printPath(squares.get(rows-1).get(columns-1)));
+                    break;
             }
             JOptionPane.showMessageDialog(null,  result ? "FOUND SOLUTION" : "NO SOLUTION FOR THIS MAZE");
 
         }).start();
+    }
+    private boolean AStar(){
+        boolean result = false;
+        Square start = squares.get(0).get(0);
+        Square goal = squares.get(rows-1).get(columns-1);
+        PriorityQueue<Square> priorityQueue = new PriorityQueue<>(rows * columns, new Square());
+        start.setgCost(0);
+        start.setfCost(start.gethCost());
+        priorityQueue.add(start);
+        while (!priorityQueue.isEmpty()){
+            Square currentSquare = priorityQueue.poll();
+            setSquareAsVisited(currentSquare.getX(), currentSquare.getY(), true);
+/*            System.out.println("currentSquare: " + currentSquare +""+ currentSquare.getfCost());*/
+            if (currentSquare.equals(goal)){
+                result = true;
+                break;
+            }
+            HashMap<Square, Boolean> neighbors;
+            neighbors = this.setSquareNeighbors(currentSquare.getX(), currentSquare.getY(), currentSquare.getgCost());
+            for (Square square: neighbors.keySet()){
+/*                System.out.println(square + "" + square.getfCost());
+                System.out.println((currentSquare.getfCost()) + "::" + square.getfCost());*/
+                if (!this.visited[square.getX()][square.getY()] ) {
+                    path.put(square, currentSquare);  //TODO fix path
+                    priorityQueue.add(square);
+                }
+            }
+        }
+        return result;
+    }
+
+    /*
+    void tracePath(cell cellDetails[][COL], Pair dest)
+{
+    printf("\nThe Path is ");
+    int row = dest.first;
+    int col = dest.second;
+
+    stack<S> Path;
+
+    while (!(cellDetails[row][col].parent_i == row
+        && cellDetails[row][col].parent_j == col)) {
+        Path.push(make_pair(row, col));
+        int temp_row = cellDetails[row][col].parent_i;
+        int temp_col = cellDetails[row][col].parent_j;
+        row = temp_row;
+        col = temp_col;
+    }
+
+    Path.push(make_pair(row, col));
+    while (!Path.empty()) {
+        pair<int, int> p = Path.top();
+        Path.pop();
+        printf("-> (%d,%d) ", p.first, p.second);
+    }
+
+    return;
+}
+    */
+    private List<Square> printPath(Square goal){
+        List<Square> pathToGoal = new ArrayList<>();
+        for(Square square = goal; square!=null; square = this.path.get(square)){
+            pathToGoal.add(square);
+        }
+        Collections.reverse(pathToGoal);
+
+        return pathToGoal;
+    }
+
+    private HashMap<Square, Boolean> setSquareNeighbors(int x, int y, int gCost){
+        HashMap<Square, Boolean> neighbors = new HashMap<>();
+        int row;
+        int column;
+        for (int i = 0; i < 4; i++){
+            if (i % 2 == 0){
+                column = x;
+                row = y + (i - 1);
+            } else {
+                column = x + (i - 2);
+                row = y;
+            }
+            if ((column < this.values.length && row < this.values.length) && (column >= 0 && row >= 0)) {
+                if (this.values[column][row] == Definitions.EMPTY) {
+
+                    if (gCost + 10 < this.squares.get(column).get(row).getgCost()){
+                        this.squares.get(column).get(row).setgCost(gCost + 10);
+                    }
+                    this.squares.get(column).get(row).setfCost(this.squares.get(column).get(row).fCost());
+                    neighbors.put(this.squares.get(column).get(row), false);
+                }
+            }
+        }
+        for (int i = 0; i < 4; i++){
+            if (i % 2 == 0){
+                if (i == 0) {
+                    column = x - 1;
+                    row = y + 1;
+                } else {
+                    column = x + 1;
+                    row = y - 1;
+                }
+            } else {
+                column = x + (i - 2);
+                row = y + (i - 2);
+            }
+            if ((column < this.values.length && row < this.values.length) && (column >= 0 && row >= 0)) {
+                if (this.values[column][row] == Definitions.EMPTY) {
+
+                    if (gCost + 14 < this.squares.get(column).get(row).getgCost()){
+                        this.squares.get(column).get(row).setgCost(gCost + 14);
+                    }
+                    this.squares.get(column).get(row).setfCost(this.squares.get(column).get(row).fCost());
+                    neighbors.put(this.squares.get(column).get(row), false);
+                }
+            }
+        }
+        return neighbors;
     }
 
     private boolean BFS (){
