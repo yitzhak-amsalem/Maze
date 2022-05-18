@@ -19,8 +19,10 @@ public class Maze extends JFrame {
     private ArrayList<ArrayList<Square>> squares;
     private ArrayList<Square> squaresColumns;
     private HashMap<Square, Square> path;
+    private Square start;
+    private Square goal;
 
-    public Maze(int algorithm, int size, int startRow, int startColumn) {
+    public Maze(int algorithm, int size, int startRow, int startColumn, Square start, Square goal) {
         this.algorithm = algorithm;
         Random random = new Random();
         this.values = new int[size][];
@@ -41,8 +43,8 @@ public class Maze extends JFrame {
                 this.color[i][j] = "white";
             }
         }
-        values[0][0] = Definitions.EMPTY;
-        values[size - 1][size - 1] = Definitions.EMPTY;
+        values[start.getX()][start.getY()] = Definitions.EMPTY;
+        values[goal.getX()][goal.getY()] = Definitions.EMPTY;
         this.visited = new boolean[this.values.length][this.values.length];
         this.startRow = startRow;
         this.startColumn = startColumn;
@@ -59,9 +61,11 @@ public class Maze extends JFrame {
                 Square s = new Square(i, j);
                 squares.get(i).add(s);
                 path.put(s, null);
-                squares.get(i).get(j).sethCost(squares.get(i).get(j).hCost(new Square(rows - 1, columns - 1)));
+                squares.get(i).get(j).sethCost(squares.get(i).get(j).hCost(goal));
             }
         }
+        this.start = start;
+        this.goal = goal;
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //        this.setLocationRelativeTo(null);
@@ -96,7 +100,7 @@ public class Maze extends JFrame {
                     break;
                 case Definitions.ALGORITHM_A_STAR:
                     result = this.AStar();
-                    System.out.println(this.printPath(squares.get(rows-1).get(columns-1)));
+                    System.out.println(this.printPath(squares.get(this.goal.getX()).get(this.goal.getY())));
                     break;
             }
             JOptionPane.showMessageDialog(null,  result ? "FOUND SOLUTION" : "NO SOLUTION FOR THIS MAZE");
@@ -105,8 +109,8 @@ public class Maze extends JFrame {
     }
     private boolean AStar(){
         boolean result = false;
-        Square start = squares.get(0).get(0);
-        Square goal = squares.get(rows-1).get(columns-1);
+        Square start = squares.get(this.start.getX()).get(this.start.getY());
+        Square goal = squares.get(this.goal.getX()).get(this.goal.getY());
         PriorityQueue<Square> priorityQueue = new PriorityQueue<>(rows * columns, new Square());
         start.setgCost(0);
         start.setfCost(start.gethCost());
