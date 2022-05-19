@@ -37,6 +37,7 @@ public class Maze extends JFrame {
             }
             values[i] = row;
         }
+
         this.color = new String[size][size];
         for (int i = 0; i < values.length; i++) {
             for (int j = 0; j < values.length; j++) {
@@ -51,6 +52,11 @@ public class Maze extends JFrame {
         this.buttonList = new ArrayList<>();
         this.rows = values.length;
         this.columns = values.length;
+        for (int i = columns - 7; i < columns; i++){
+            values[4][i-1] = Definitions.EMPTY;
+            values[5][i] = Definitions.OBSTACLE;
+            values[6][i-1] = Definitions.EMPTY;
+        }
 
         this.path = new HashMap<>();
         this.squares = new ArrayList<>();
@@ -73,7 +79,8 @@ public class Maze extends JFrame {
         this.setLayout(gridLayout);
         for (int i = 0; i < rows * columns; i++) {
             int value = values[i / rows][i % columns];
-            JButton jButton = new JButton(String.valueOf(i));
+            //JButton jButton = new JButton(String.valueOf(i)); //TODO
+            JButton jButton = new JButton(String.valueOf((i / rows)) + ", " + String.valueOf((i % columns)));
             if (value == Definitions.OBSTACLE) {
                 jButton.setBackground(Color.BLACK);
             } else {
@@ -82,6 +89,7 @@ public class Maze extends JFrame {
             this.buttonList.add(jButton);
             this.add(jButton);
         }
+
         this.setVisible(true);
         this.setSize(Definitions.WINDOW_WIDTH, Definitions.WINDOW_HEIGHT);
         this.setResizable(false);
@@ -139,6 +147,7 @@ public class Maze extends JFrame {
         List<Square> pathToGoal = new ArrayList<>();
         for(Square square = goal; square!=null; square = this.path.get(square)){
             pathToGoal.add(square);
+            this.buttonList.get(square.getX() * this.rows + square.getY()).setBackground(Color.RED);
         }
         Collections.reverse(pathToGoal);
 
@@ -195,7 +204,7 @@ public class Maze extends JFrame {
         return neighbors;
     }
 
-    private boolean BFS (){
+    private boolean BFS(){
         boolean result = false;
         int x = 0;
         int y = 0;

@@ -21,7 +21,7 @@ public class Square implements Comparator<Square> {
         this.x = x;
         this.y = y;
         this.fCost = MAX_DIST;
-        this.gCost = MAX_DIST;
+        this.gCost = 0;
         this.hCost = MAX_DIST;
     }
 
