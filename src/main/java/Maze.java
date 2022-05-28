@@ -52,11 +52,19 @@ public class Maze extends JFrame {
         this.buttonList = new ArrayList<>();
         this.rows = values.length;
         this.columns = values.length;
-        for (int i = columns - 7; i < columns; i++){
-            values[4][i-1] = Definitions.EMPTY;
-            values[5][i] = Definitions.OBSTACLE;
-            values[6][i-1] = Definitions.EMPTY;
+
+/*        for (int i = 0; i < values.length; i++) {
+            for (int j = 0; j < values.length; j++) {
+                if (i > 1 || j > 1) {
+                    values[i][j] = Definitions.EMPTY;
+                }
+            }
         }
+
+        for (int i = columns - 5; i < columns; i++){
+            values[1][columns-1] = Definitions.OBSTACLE;
+            values[2][i] = Definitions.OBSTACLE;
+        }*/
 
         this.path = new HashMap<>();
         this.squares = new ArrayList<>();
@@ -89,6 +97,9 @@ public class Maze extends JFrame {
             this.buttonList.add(jButton);
             this.add(jButton);
         }
+        this.buttonList.get(start.getX() * this.rows + start.getY()).setText("S");
+        this.buttonList.get(goal.getX() * this.rows + goal.getY()).setBackground(Color.yellow);
+        this.buttonList.get(goal.getX() * this.rows + goal.getY()).setText("G");
 
         this.setVisible(true);
         this.setSize(Definitions.WINDOW_WIDTH, Definitions.WINDOW_HEIGHT);
@@ -98,7 +109,6 @@ public class Maze extends JFrame {
     public void checkWayOut() {
         new Thread(() -> {
             boolean result = false;
-
             switch (this.algorithm) {
                 case Definitions.ALGORITHM_DFS:
                     result = this.DFS();
@@ -112,7 +122,6 @@ public class Maze extends JFrame {
                     break;
             }
             JOptionPane.showMessageDialog(null,  result ? "FOUND SOLUTION" : "NO SOLUTION FOR THIS MAZE");
-
         }).start();
     }
 
@@ -150,6 +159,8 @@ public class Maze extends JFrame {
             this.buttonList.get(square.getX() * this.rows + square.getY()).setBackground(Color.RED);
         }
         Collections.reverse(pathToGoal);
+        this.buttonList.get(this.start.getX() * this.rows + this.start.getY()).setBackground(Color.yellow);
+        this.buttonList.get(this.goal.getX() * this.rows + this.goal.getY()).setBackground(Color.yellow);
 
         return pathToGoal;
     }
@@ -168,8 +179,7 @@ public class Maze extends JFrame {
             }
             if ((column < this.values.length && row < this.values.length) && (column >= 0 && row >= 0)) {
                 if (this.values[column][row] == Definitions.EMPTY) {
-
-                    if (gCost + 10 < this.squares.get(column).get(row).getgCost()){
+                    if (gCost + 10 < this.squares.get(column).get(row).getgCost() || this.squares.get(column).get(row).getgCost() == 0){ // TODO || this.squares.get(column).get(row).getgCost() == 0
                         this.squares.get(column).get(row).setgCost(gCost + 10);
                     }
                     this.squares.get(column).get(row).setfCost(this.squares.get(column).get(row).fCost());
@@ -192,8 +202,7 @@ public class Maze extends JFrame {
             }
             if ((column < this.values.length && row < this.values.length) && (column >= 0 && row >= 0)) {
                 if (this.values[column][row] == Definitions.EMPTY) {
-
-                    if (gCost + 14 < this.squares.get(column).get(row).getgCost()){
+                    if (gCost + 14 < this.squares.get(column).get(row).getgCost() || this.squares.get(column).get(row).getgCost() == 0){ // TODO || this.squares.get(column).get(row).getgCost() == 0
                         this.squares.get(column).get(row).setgCost(gCost + 14);
                     }
                     this.squares.get(column).get(row).setfCost(this.squares.get(column).get(row).fCost());
